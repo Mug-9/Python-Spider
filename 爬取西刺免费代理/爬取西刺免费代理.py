@@ -6,8 +6,8 @@ import re
 
 url = "https://www.xicidaili.com/nn/"
 random_user_agent = user_agent_list.getheaders()
-request = urllib.request.Request(url)
-request.add_header("User-Agent", random_user_agent)
+request = urllib.request.Request(url, headers=random_user_agent)
+#request.add_header("User-Agent", random_user_agent)
 response = urllib.request.urlopen(request)
 data = response.read().decode("utf-8")
 div = re.findall(r'<table id="ip_list">.*?</table>', data, re.S)[0]

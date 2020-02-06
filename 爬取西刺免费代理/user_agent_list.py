@@ -98,7 +98,8 @@ def getheaders():
     ]
     user_agent_list = user_agent_list_1 + user_agent_list_2 + user_agent_list_3;
     UserAgent = random.choice(user_agent_list)
-    return UserAgent
+    header = {"User-Agent": UserAgent}
+    return header
 
 
 #url = "https://www.baidu.com"
