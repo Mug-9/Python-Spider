@@ -1,6 +1,4 @@
 import random
-import urllib.request
-import urllib.parse
 
 
 # 返回一个随机的请求头 headers
@@ -100,12 +98,3 @@ def getheaders():
     UserAgent = random.choice(user_agent_list)
     header = {"User-Agent": UserAgent}
     return header
-
-
-#url = "https://www.baidu.com"
-#random_user_agent = getheaders()
-#request = urllib.request.Request(url)
-#request.add_header("User-Agent", random_user_agent)
-#response = urllib.request.urlopen(request)
-#print(request.get_header("User-agent"))
-

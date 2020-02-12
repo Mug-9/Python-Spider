@@ -1,17 +1,19 @@
 import requests
 import re
-from user_agent_list import getheaders
-from spider_xici_free_proxy import random_free_proxy
+import spider_xici_free_proxy
 from bs4 import BeautifulSoup
 import time
+import threading
 
 class Spider_AwenHaven_Toplist(object):
     def __init__(self):
+        self.download_list=[]
+        self.sem = threading.Semaphore(100)
         self.login_url = "https://wallhaven.cc/auth/login"
         self.toplist_url = "https://wallhaven.cc/toplist"
-        self.user_agent = getheaders()
-        print(" user_agent 获取完毕!!!\n user-agent: %s" % self.user_agent)
-        self.proxy = random_free_proxy()
+        self.header = spider_xici_free_proxy.getheader()
+        print(" user_agent 获取完毕!!!\n user-agent: %s" % self.header)
+        self.proxy = spider_xici_free_proxy.random_free_proxy()
         self.cookie_dict={}
         print(" proxy获取完毕!!!\n proxy: %s" % self.proxy)
 
@@ -34,13 +36,13 @@ class Spider_AwenHaven_Toplist(object):
         self.check(response)
         print(" 登录成功!!!\n 正在组装Cookies...")
         cook = response.request.headers["Cookie"]
-        temp_cookie = self.user_agent['Cookie']
+        temp_cookie = self.header['Cookie']
         temp_cookie_list = temp_cookie.split(";")
         self.cookie_dict.update(__cfduid=temp_cookie_list[0].split('=')[1])
         cookies_list = cook.split("; ")
         for cookie in cookies_list:
             self.cookie_dict[cookie.split('=')[0]] = cookie.split('=')[1]
-        self.user_agent.pop('Cookie')
+        self.header.pop('Cookie')
         print(" cookie组装完毕!!!\n status_code: %s" % response.status_code)
 
     #1.3 获取页面数据
@@ -58,10 +60,10 @@ class Spider_AwenHaven_Toplist(object):
         loop = 20
         while (loop):
             try:
-                response = requests.get(url, headers=self.user_agent, proxies=self.proxy, timeout=5, cookies=self.cookie_dict)
+                response = requests.get(url, headers=self.header, proxies=self.proxy, timeout=5)
                 print(' 链接成功!!!')
                 break
-            except requests.exceptions.RequestException as e:
+            except Exception:
                 loop = loop - 1
                 print(" 链接失败,重新连接,%s 次后放弃..." % loop)
         if loop == 0:
@@ -74,10 +76,10 @@ class Spider_AwenHaven_Toplist(object):
         loop = 20
         while (loop):
             try:
-                response = requests.post(url, headers=self.user_agent, proxies=self.proxy, data=login_data, timeout=5)
+                response = requests.post(url, headers=self.header, proxies=self.proxy, data=login_data, timeout=5)
                 print(' 链接成功!!!')
                 return response
-            except requests.exceptions.RequestException as e:
+            except Exception as e:
                 loop = loop - 1
                 print(" 链接失败,重新连接,%s 次后放弃..." % loop)
         if loop == 0:
@@ -93,12 +95,12 @@ class Spider_AwenHaven_Toplist(object):
         print(" _token response完毕!!!")
         data = response.content.decode("utf-8")
         print(" _token data解析完成!!!")
-        soup = BeautifulSoup(data, 'lxml')
+        soup = BeautifulSoup(data, 'html.parser')
         _token = soup.find_all(type='hidden')[0]['value']
         cookie = ""
         for c in response.cookies:
             cookie += c.name + "=" + c.value + ";"
-        self.user_agent['Cookie'] = cookie
+        self.header['Cookie'] = cookie
         print(" _token获取完毕!!!\n _token: %s" % _token)
         return _token
 
@@ -113,24 +115,29 @@ class Spider_AwenHaven_Toplist(object):
     def Analysis_img_url(self, web_url):
         print(" 开始解析img_url...")
         response = self.loop_get(web_url).content.decode("utf-8")
-        soup = BeautifulSoup(response, 'lxml')
-        img_url = soup.select("#wallpaper")[0].get('src')
+        #print(response)
+        img_url = re.findall(r'<img id="wallpaper" src="(.*?)" alt', response)
+        if(len(img_url) == 0):
+            print(response)
+        else:
+            img_url = img_url[0]
         print(' img_url解析完成')
         return img_url
 
 
     #3.本地
     def img_parse(self, img_url, img_name):
-        print(" 开始下载图片...")
-        response = self.loop_get(img_url)
-        if(type(response) == type(-1) and response == -1):
-            return -1
-        img_data = response.content
-        with open("picture//%s" % img_name, "wb") as f:
-            f.write(img_data)
-            print(" %s 正在写入..." % img_name)
-            time.sleep(1)
-            print(" %s 写入完毕" % img_name)
+        with self.sem:
+            print(" 开始下载图片 %s..." % img_name)
+            response = self.loop_get(img_url)
+            if(type(response) == type(-1) and response == -1):
+                return -1
+            img_data = response.content
+            with open("E://Picture//%s" % img_name, "wb") as f:
+                f.write(img_data)
+                print(" %s 正在写入..." % img_name)
+                time.sleep(1)
+                print(" %s 写入完毕" % img_name)
 
 
     #4.启动
@@ -145,11 +152,12 @@ class Spider_AwenHaven_Toplist(object):
             with open("web_data.html", "w") as f:
                 f.write(web_data)
             img_web_list = self.Analysis_web_data(web_data)
+            #print(img_web_list)
             for web_url in img_web_list:
                 img_url = self.Analysis_img_url(web_url)
                 img_name = img_url.split('/')[5]
                 print(" img_url: %s, img_name: %s" % (img_url, img_name))
-                self.img_parse(img_url, img_name)
+                download_thread = threading.Thread(target=self.img_parse, args=(img_url, img_name)).start()
             page += 1
 
     #5.check
@@ -157,5 +165,7 @@ class Spider_AwenHaven_Toplist(object):
         if(type(status_code) == type(-1) and status_code == -1):
             print(" 链接失败, 请重新开始")
             exit()
+
+    #6 多线程下载
 
 Spider_AwenHaven_Toplist().run()

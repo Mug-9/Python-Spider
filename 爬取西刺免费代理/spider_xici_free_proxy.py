@@ -1,23 +1,27 @@
 import requests
-import urllib
 import user_agent_list
 import re
 import random
+
+
+def getheader():
+    header = user_agent_list.getheaders()
+    return header
+
 
 def random_free_proxy():
     while 1:
         free_proxy_str = random.choice(HTTPS)
         free_proxy_dict = eval(free_proxy_str)
-        result = requests.get("https://www.baidu.com", headers=random_user_agent, proxies=free_proxy_dict)
+        result = requests.get("https://www.baidu.com", headers=header, proxies=free_proxy_dict)
         if (result.status_code == 200):
             return free_proxy_dict
 
+
 url = "https://www.xicidaili.com/nn/"
-random_user_agent = user_agent_list.getheaders()
-request = urllib.request.Request(url, headers=random_user_agent)
-#request.add_header("User-Agent", random_user_agent)
-response = urllib.request.urlopen(request)
-data = response.read().decode("utf-8")
+header = getheader()
+response = requests.get(url, headers=header)
+data = response.content.decode("utf-8")
 div = re.findall(r'<table id="ip_list">.*?</table>', data, re.S)[0]
 tr = re.findall(r'<tr class="odd">(.*?)</tr>', div, re.S)
 tr = tr + re.findall(r'<tr class="">(.*?)</tr>', div, re.S)
