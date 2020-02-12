@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import re
 import time
 import threading
+import shutil
 
 class Spider_Video(object):
     def __init__(self):
@@ -90,6 +91,9 @@ class Spider_Video(object):
             if len(os.listdir(path)) == num:
                 os.system(r"copy /b *.ts %s.mp4" % name)
                 print("%s合并完毕"%name)
+                shutil.move("%s/%s.mp4" % (path, name), "%s.mp4" % path)
+                os.chdir('E:/')
+                shutil.rmtree(path)
                 return
             else:
                 time.sleep(1)
@@ -103,6 +107,5 @@ class Spider_Video(object):
             ts_list = self.get_ts(m3u8) # 获取到第几集的ts_list
             self.download_thread(m3u8, ts_list, "第%s集" % idx)
             idx += 1
-
 
 Spider_Video().run()
