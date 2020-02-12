@@ -10,7 +10,8 @@ import shutil
 
 class Spider_Video(object):
     def __init__(self):
-        self.url = "https://www.88ys.com/vod-play-id-58682-src-1-num-1.html"
+        self.url = input()
+        self.url = self.video_url()
         self.header = spider_xici_free_proxy.getheader()
         self.proxy = spider_xici_free_proxy.random_free_proxy()
         self.sem = threading.Semaphore
@@ -108,4 +109,9 @@ class Spider_Video(object):
             self.download_thread(m3u8, ts_list, "第%s集" % idx)
             idx += 1
 
+    #6 得到视频url
+    def video_url(self):
+        video_id = self.url.split('/')[len(self.url.split('/'))-1][:-6]
+        url = "https://www.88ys.com/vod-play-id-%s-src-1-num-1.html" % video_id
+        return url
 Spider_Video().run()
