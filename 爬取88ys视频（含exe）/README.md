@@ -1,5 +1,3 @@
-![](https://wx1.sinaimg.cn/mw690/0083TyOJly1gcefl0zsx6j30u0140kfn.jpg)
-
 ## 爬取88ys视频
 
 ### 使用方式
