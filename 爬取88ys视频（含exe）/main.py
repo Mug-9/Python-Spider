@@ -102,10 +102,13 @@ class Spider_Video():
         self.name = re.findall(r'mac_name=\'(.*?)\'', response)[0]
         m3u8_unescape = re.findall(r'mac_url=unescape\(\'(.*?)\'\);', response)[0]
         m3u8_encode = unquote(m3u8_unescape, encoding='utf-8')
-        m3u8_list = re.findall(r'https://.*?.m3u8', m3u8_encode)
-        header_name = m3u8_list[0].split('https')[len(m3u8_list[0].split('https')) - 1].split('/')[2]
-        m3u8_list = re.findall(r'https://%s.*?.m3u8' % header_name, m3u8_encode)
-        return m3u8_list
+        sourcelist = m3u8_encode.split("$$$")
+        print(sourcelist)
+        m3u8_list = []
+        for source in sourcelist:
+            m3u8_list = re.findall(r'https://.*?.m3u8', source)
+            if len(m3u8_list):
+                return m3u8_list
 
     # 2 获取每个的playlist的ts
     def get_ts(self, m3u8_url):
@@ -134,7 +137,6 @@ class Spider_Video():
         if not os.path.exists(path):
             os.mkdir(path)
         for ts in ts_list:
-            print(ts.split('/')[len(ts.split('/'))-1])
             ts_url = url.replace(url.split('/')[len(url.split('/'))-1], ts.split('/')[len(ts.split('/'))-1])
             threading.Thread(target=self.download_method, args=(ts_url, path)).start()
             time.sleep(1)
@@ -143,7 +145,6 @@ class Spider_Video():
     # 3.1 下载方法
     def download_method(self, url, path):
         with self.sem:
-            print(url)
             name = url.split('/')[len(url.split('/')) - 1]
             self.gui.download_text.insert(END, "%s//%s开始下载\n" % (path, name), 'Wait')
             self.gui.download_text.see(END)
