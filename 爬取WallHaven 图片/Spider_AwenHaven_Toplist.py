@@ -1,6 +1,6 @@
 import requests
 import re
-import spider_xici_free_proxy
+import spider_proxy
 from bs4 import BeautifulSoup
 import time
 import threading
