@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 beautifulsoup4==4.9.3
 bs4==0.0.1
+=======
+>>>>>>> 44307d67fc8587d0880dec845f4230d21d3ea47d
 certifi==2020.12.5
 chardet==3.0.4
 idna==2.10
 lxml==4.6.2
 requests==2.25.0
+<<<<<<< HEAD
 soupsieve==2.0.1
+=======
+>>>>>>> 44307d67fc8587d0880dec845f4230d21d3ea47d
 urllib3==1.26.2
