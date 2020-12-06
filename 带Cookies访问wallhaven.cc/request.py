@@ -1,7 +1,8 @@
 import requests
-import spider_xici_free_proxy
-import user_agent_list
+import spider_proxy
 import re
+
+proxies = spider_proxy.SpiderProxy()
 
 session = requests.session()
 login_url = "https://wallhaven.cc/auth/login"
@@ -15,14 +16,12 @@ def get_token():
 
 login_data = {
     '_token': get_token(),
-    'username':'xx',
-    'password':'xx'
+    'username': '643719884@qq.com',
+    'password': 'dhl643719884'
 }
-free_proxy = spider_xici_free_proxy.random_free_proxy()
-print(free_proxy)
-response = session.post(login_url, headers=user_agent_list.getheaders(), proxies=free_proxy, data=login_data)
-print(response.status_code)
-data = session.get(member_url, headers=user_agent_list.getheaders()).content.decode()
+response = session.post(login_url, headers=proxies.header, proxies=proxies.proxy, data=login_data)
+print(session.cookies)
+data = session.get(member_url, headers=proxies.header, proxies=proxies.proxy).content.decode()
 
 with open('awewall.html', 'w') as f:
     f.write(data)

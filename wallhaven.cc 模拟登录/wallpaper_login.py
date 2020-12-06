@@ -13,11 +13,8 @@ class WallPaperLogIn():
         self.cookies = {}
         self.Is = False
 
-    # 0. 初始化
-
     # 1. 请求页面获得_token 和 cookie
     def get_html(self):
-
         response = requests.get(self.get_url, headers=self.proxies.header, proxies=self.proxies.proxy)
         response_data = response.content.decode('utf-8')
 
