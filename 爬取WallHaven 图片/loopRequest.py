@@ -36,7 +36,7 @@ class LoopRequest():
                 print("loopRequest: %s 链接成功" % url)
                 return response
             except Exception as e:
-                print("loopRequest: " + e)
+                print("loopRequest: ", e)
                 time.sleep(5)
                 if loop == 0:
                     return "get error"

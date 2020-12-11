@@ -1,13 +1,13 @@
 import requests
 import re
-import loopRequest
+from loopRequest import request
 
 
 class SpiderCookies():
     def __init__(self):
         self.get_url = "https://wallhaven.cc/login"
         self.post_url = "https://wallhaven.cc/auth/login"
-        self.request = loopRequest.request
+        self.request = request
         self.data = {}
         self._token = ""
         self.cookies = {}

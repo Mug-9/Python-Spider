@@ -70,7 +70,7 @@ class SpiderWallPaper():
             print("---%s 写入完毕 -- count: %s" % (img_name, self.count))
 
             threadLock.acquire()
-            self.download_log.write(img_name)
+            self.download_log.write(img_name+'\n')
             self.count -= 1
             threadLock.release()
 
