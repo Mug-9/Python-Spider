@@ -71,3 +71,8 @@ class SpiderCookies():
         self.combined_data()
         self.combined_cookie()
         self.post_html()
+
+
+if __name__ == '__main__':
+    sp = SpiderCookies()
+    

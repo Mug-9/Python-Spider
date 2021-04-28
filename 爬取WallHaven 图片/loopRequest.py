@@ -24,7 +24,6 @@ class LoopRequest():
         self.get_proxy()
 
         args['headers'] = self.proxies.header
-        args['proxies'] = self.proxies.proxy
         args['timeout'] = 5
         args['verify'] = False
         loop = 50
