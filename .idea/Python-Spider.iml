@@ -6,7 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/带Cookies访问wallhaven.cc" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/爬取WallHaven 图片" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (Spider)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
